@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terjadwal Tugas</title>
+    <style>
+        body {
+            background-color: #111;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .title {
+            font-size: 2em;
+            font-weight: bold;
+            color: #007aff;
+            padding: 10px 20px;
+        }
+
+        .task-section {
+            padding: 0 20px;
+            list-style: none;
+            margin-bottom: 80px;
+        }
+
+        .task {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .task:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .task .circle {
+            width: 20px;
+            height: 20px;
+            border: 1px solid white;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .task-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .task-title {
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+
+        .task-subtitle {
+            font-size: 0.9em;
+            color: gray;
+        }
+
+        .no-tasks {
+            color: #aaa;
+            font-size: 1.2em;
+            text-align: center;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div class="title">Tugas Terjadwal</div>
+    <ul class="task-section" role="list" id="scheduledTaskList">
+        <!-- Tugas terjadwal akan ditambahkan di sini -->
+    </ul>
+    <div id="noTasksMessage" class="no-tasks" style="display: none;">Tidak ada tugas terjadwal.</div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', loadScheduledTasks);
+
+        function loadScheduledTasks() {
+            const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+            const scheduledTaskList = document.getElementById('scheduledTaskList');
+            const noTasksMessage = document.getElementById('noTasksMessage');
+
+            scheduledTaskList.innerHTML = '';
+
+            if (tasks.length === 0) {
+                noTasksMessage.style.display = 'block'; // Menampilkan pesan jika tidak ada tugas
+            } else {
+                noTasksMessage.style.display = 'none'; // Menyembunyikan pesan jika ada tugas
+
+                tasks.forEach(task => {
+                    const taskItem = document.createElement('li');
+                    taskItem.className = 'task';
+                    taskItem.innerHTML = `
+                        <div class="circle"></div>
+                        <div class="task-info">
+                            <div class="task-title">${task.title}</div>
+                            <div class="task-subtitle">${task.day} – ${task.period} – ${task.time}</div>
+                            <div class="task-subtitle">Kategori: ${task.kategori}</div>
+                        </div>
+                    `;
+                    scheduledTaskList.appendChild(taskItem);
+                });
+            }
+        }
+    </script>
+</body>
+</html>

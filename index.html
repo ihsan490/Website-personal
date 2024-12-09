@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pengelola Tugas</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Gaya dasar */
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .search-bar {
+            display: flex;
+            width: 100%;
+            gap: 8px;
+        }
+
+        .search-bar input[type="text"] {
+            width: 85%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+        }
+
+        .search-bar input[type="text"]:focus {
+            outline: none;
+            border-color: #999;
+        }
+
+        .options-btn {
+            padding: 10px;
+            background-color: #ddd;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        /* Kartu Tugas */
+        .task-cards a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .card {
+            background-color: #f4f4f4;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            text-align: center;
+            color: #333;
+            transition: background-color 0.3s;
+        }
+
+        .card:hover {
+            background-color: #e0e0e0;
+        }
+
+        /* Daftar Tugas */
+        .task-list h2 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .task-item {
+            background-color: #f4f4f4;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            text-align: center;
+            color: #333;
+            transition: background-color 0.3s;
+        }
+
+        .task-item:hover {
+            background-color: #e0e0e0;
+        }
+
+        /* Tugas "My Homework" */
+        .task-item.homework {
+            background-color: #ffe4b5;
+            border: 1px solid #ffa500;
+            position: relative;
+        }
+
+        .task-item.homework::before {
+            content: "🌟";
+            font-size: 24px;
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .task-item.homework .homework-text {
+            font-weight: bold;
+            color: #d2691e;
+            margin-left: 30px; /* menyesuaikan posisi teks */
+        }
+
+        /* Footer */
+        .footer-btn {
+            background-color: #f4f4f4;
+            border: none;
+            padding: 15px;
+            margin: 5px 0;
+            width: 100%;
+            border-radius: 8px;
+            color: #333;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: center;
+            transition: background-color 0.3s;
+        }
+
+        .footer-btn:hover {
+            background-color: #e0e0e0;
+        }
+
+        /* Pesan jika tidak ada tugas */
+        .no-tasks {
+            font-size: 16px;
+            color: #888;
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="search-bar">
+                <input type="text" placeholder="Cari..." id="searchInput">
+                <button class="options-btn">...</button>
+            </div>
+        </header>
+        
+        <section class="task-cards">
+            <a href="/tugaskelompok/hari ini/hari_ini.html">
+                <div class="card">
+                    <p>Hari Ini</p>
+                </div>
+            </a>
+            <a href="/tugaskelompok/terjadwal/terjadwal.html">
+                <div class="card">
+                    <p>Terjadwal</p>
+                </div>
+            </a>
+            <a href="/tugaskelompok/semua/semua.html">
+                <div class="card">
+                    <p>Semua</p>
+                </div>
+            </a>
+            <a href="/tugaskelompok/selesai/selesai.html">
+                <div class="card">
+                    <p>Selesai</p>
+                </div>
+            </a>
+        </section>
+
+        <section class="task-list">
+            <h2>Daftar Saya</h2>
+            <div id="dynamicTasks">
+                <!-- Tugas tetap "My Homework" dengan gaya spesial -->
+                <div class="task-item homework">
+                    <a href="/tugaskelompok/homework/homework.html">
+                        <div class="homework-text">My Homework</div>
+                    </a>
+                </div>
+                <!-- Pesan jika tidak ada tugas -->
+                <div class="no-tasks" id="noTasksMessage" style="display: none;">Tidak ada tugas yang ditambahkan.</div>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <a href="/tugaskelompok/pengingat baru/pengingat.html">
+                <button class="footer-btn">+ Pengingat Baru</button>
+            </a>
+            <a href="/tugaskelompok/tambah daftar/tambah_daftar.html">
+                <button class="footer-btn">Tambah Daftar</button>
+            </a>
+        </footer>
+    </div>
+
+    <script>
+        // Fungsi pencarian
+        document.querySelector('#searchInput').addEventListener('input', function() {
+            const query = this.value.toLowerCase();
+            const taskItems = document.querySelectorAll('.task-item');
+            taskItems.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                item.style.display = text.includes(query) ? '' : 'none';
+            });
+        });
+
+        // Menampilkan daftar tugas dari localStorage tanpa menghapus "My Homework"
+        function displayTaskLists() {
+            const tasksContainer = document.getElementById('dynamicTasks');
+            const noTasksMessage = document.getElementById('noTasksMessage');
+            let lists = JSON.parse(localStorage.getItem('taskLists')) || [];
+
+            // Filter data "bagas"
+            lists = lists.filter(listName => listName.toLowerCase() !== 'bagas');
+
+            // Simpan kembali ke localStorage setelah penyaringan
+            localStorage.setItem('taskLists', JSON.stringify(lists));
+
+            // Jika tidak ada tugas, tampilkan pesan
+            if (lists.length === 0) {
+                noTasksMessage.style.display = 'block';
+            } else {
+                noTasksMessage.style.display = 'none';
+            }
+
+            lists.forEach(listName => {
+                const taskItem = document.createElement('div');
+                taskItem.className = 'task-item';
+                taskItem.innerHTML = `<p>${listName}</p>`;
+                tasksContainer.appendChild(taskItem);
+            });
+        }
+
+        // Memanggil fungsi tampilan saat halaman dimuat
+        window.onload = displayTaskLists;
+    </script>
+</body>
+</html>

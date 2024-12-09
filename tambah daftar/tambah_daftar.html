@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Baru</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #222;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            width: 300px;
+            background-color: #333;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .header h2 {
+            font-size: 18px;
+        }
+
+        .icon-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .icon {
+            background-color: #007bff;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            color: #fff;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .input-group label {
+            font-size: 14px;
+            color: #aaa;
+        }
+
+        .input-group input {
+            width: 100%;
+            max-width: 250px;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            background-color: #444;
+            color: #fff;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .error {
+            color: red;
+            font-size: 12px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <button style="color: #aaa; background: none; border: none;" onclick="window.history.back();">Batalkan</button>
+        <h2>Daftar Baru</h2>
+        <button style="color: #aaa; background: none; border: none;" onclick="saveListName()">Selesai</button>
+    </div>
+
+    <div class="icon-container">
+        <div class="icon">📋</div>
+    </div>
+
+    <div class="input-group">
+        <label for="listName">Nama Daftar</label>
+        <input type="text" id="listName" placeholder="Nama Daftar">
+    </div>
+
+    <div id="errorMessage" class="error"></div> <!-- Tempat menampilkan error -->
+
+</div>
+
+<script>
+    function saveListName() {
+        const listName = document.getElementById('listName').value.trim();
+        const errorMessage = document.getElementById('errorMessage');
+        errorMessage.innerHTML = ''; // Reset error message
+
+        if (!listName) {
+            errorMessage.innerHTML = 'Masukkan nama daftar yang valid.';
+            return;
+        }
+
+        let lists = JSON.parse(localStorage.getItem('taskLists')) || [];
+
+        // Cek apakah daftar dengan nama yang sama sudah ada
+        if (lists.includes(listName)) {
+            errorMessage.innerHTML = 'Nama daftar sudah ada. Pilih nama lain.';
+            return;
+        }
+
+        // Filter daftar untuk menghapus "Hani Tugas" jika ada
+        lists = lists.filter(name => name !== "Hani Tugas");
+
+        // Tambahkan daftar baru
+        lists.push(listName);
+        localStorage.setItem('taskLists', JSON.stringify(lists));
+
+        alert('Daftar berhasil ditambahkan!');
+        window.location.href = '../home/home.html'; // Ganti dengan URL halaman utama yang sesuai
+    }
+</script>
+
+</body>
+</html>

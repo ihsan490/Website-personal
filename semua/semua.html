@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Semua Tugas</title>
+    <style>
+        body {
+            background-color: #111;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .title {
+            font-size: 2em;
+            font-weight: bold;
+            color: #007aff;
+            padding: 10px 20px;
+        }
+        .task-section {
+            padding: 0 20px;
+            list-style: none;
+            margin-bottom: 80px;
+        }
+        .task {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .task:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .task .circle {
+            width: 20px;
+            height: 20px;
+            border: 1px solid white;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .task.completed {
+            background-color: #4caf50;
+            color: #fff;
+        }
+        .task-info {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+        .task-title {
+            font-size: 1em;
+        }
+        .task-subtitle {
+            font-size: 0.8em;
+            color: gray;
+        }
+        .done-button {
+            background-color: #007aff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .done-button:hover {
+            background-color: #005bb5;
+        }
+    </style>
+</head>
+<body>
+    <div class="title">Semua Tugas</div>
+    <div class="task-section" id="allTasks"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', loadAllTasks);
+
+        function loadAllTasks() {
+            const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+            const allTasks = document.getElementById('allTasks');
+
+            allTasks.innerHTML = ''; // Reset tugas yang tampil
+
+            tasks.forEach((task, index) => {
+                const taskItem = document.createElement('div');
+                taskItem.className = 'task' + (task.completed ? ' completed' : ''); // Menambahkan kelas 'completed' jika selesai
+                taskItem.innerHTML = `
+                    <div class="circle"></div>
+                    <div class="task-info">
+                        <div class="task-title">${task.title}</div>
+                        <div class="task-subtitle">${task.day} – ${task.period} – ${task.time}</div>
+                    </div>
+                    <button class="done-button" data-index="${index}">${task.completed ? 'Selesai' : 'Mark Selesai'}</button>
+                `;
+                
+                const doneButton = taskItem.querySelector('.done-button');
+                doneButton.addEventListener('click', () => completeTask(index));
+
+                allTasks.appendChild(taskItem);
+            });
+        }
+
+        function completeTask(index) {
+            const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+            tasks[index].completed = true; // Tandai tugas sebagai selesai
+            localStorage.setItem('tasks', JSON.stringify(tasks)); // Perbarui localStorage
+            loadAllTasks(); // Segarkan daftar tugas
+        }
+
+        window.addEventListener('storage', function(event) {
+            if (event.key === 'tasks') {
+                loadAllTasks(); // Segarkan semua tugas
+            }
+        });
+    </script>
+</body>
+</html>

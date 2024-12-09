@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pekerjaan Rumah</title>
+    <style>
+        body {
+            background-color: #111;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .title {
+            font-size: 2em;
+            font-weight: bold;
+            color: #007aff;
+            padding: 10px 20px;
+            text-align: center;
+        }
+        .task-section {
+            padding: 0 20px;
+            list-style: none;
+            margin-bottom: 80px;
+        }
+        .task {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            padding: 10px;
+            background-color: #222;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .task:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .task .circle {
+            width: 20px;
+            height: 20px;
+            border: 1px solid white;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .task-info {
+            display: flex;
+            flex-direction: column;
+        }
+        .task-title {
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+        .task-subtitle {
+            font-size: 0.9em;
+            color: gray;
+        }
+        .task-list {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="title">Pekerjaan Rumah</div>
+    <ul class="task-list" id="homeworkTasks"> <!-- Menampilkan tugas pekerjaan rumah -->
+        <!-- Tugas akan dimasukkan di sini -->
+    </ul>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', loadHomeworkTasks);
+
+        function loadHomeworkTasks() {
+            const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+            const homeworkTasks = document.getElementById('homeworkTasks');
+
+            homeworkTasks.innerHTML = ''; // Bersihkan daftar tugas
+
+            tasks.forEach(task => {
+                // Menyaring tugas berdasarkan kategori "Pekerjaan Rumah"
+                if (task.kategori === "Pekerjaan Rumah") {
+                    const taskItem = document.createElement('li');
+                    taskItem.className = 'task';
+                    taskItem.innerHTML = `
+                        <div class="circle"></div>
+                        <div class="task-info">
+                            <div class="task-title">${task.title}</div>
+                            <div class="task-subtitle">${task.day} – ${task.period} – ${task.time}</div>
+                        </div>
+                    `;
+                    homeworkTasks.appendChild(taskItem);
+                }
+            });
+        }
+
+        // Event listener untuk memantau perubahan di localStorage
+        window.addEventListener('storage', function(event) {
+            if (event.key === 'tasks') {
+                loadHomeworkTasks(); // Segarkan tugas ketika ada perubahan di localStorage
+            }
+        });
+    </script>
+</body>
+</html>

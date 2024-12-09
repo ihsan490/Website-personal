@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pengingat Tugas</title>
+    <style>
+        body {
+            background-color: #111;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .title {
+            font-size: 2em;
+            font-weight: bold;
+            color: #007aff;
+            padding: 10px 20px;
+        }
+        .task-list {
+            padding: 0 20px;
+            list-style: none;
+            margin-bottom: 80px;
+        }
+        .task {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .task:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .task.completed .circle {
+            background-color: #007aff;
+        }
+        .task .circle {
+            width: 20px;
+            height: 20px;
+            border: 1px solid white;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .task-info {
+            display: flex;
+            flex-direction: column;
+        }
+        .task-title {
+            font-size: 1em;
+        }
+        .task-subtitle {
+            font-size: 0.8em;
+            color: gray;
+        }
+        .delete-btn {
+            color: red;
+            margin-left: auto;
+            cursor: pointer;
+        }
+        .new-reminder {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px 20px;
+            color: #007aff;
+            cursor: pointer;
+            transition: color 0.3s;
+            z-index: 10;
+        }
+        .new-reminder:hover {
+            color: #005bb5;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+        }
+        .modal-content {
+            background: #333;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            width: 80%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+        .modal-content input,
+        .modal-content select,
+        .modal-content button {
+            width: 100%;
+            padding: 12px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border: none;
+            font-size: 1em;
+        }
+        .modal-content button {
+            background-color: #007aff;
+            color: white;
+        }
+        .modal-content button:hover {
+            background-color: #005bb5;
+        }
+        .close-btn {
+            color: white;
+            font-size: 1.5em;
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="title" aria-label="Judul Pengingat">Hari Ini</div>
+    <ul class="task-list" role="list" id="taskList" aria-live="polite">
+        <!-- Tugas akan ditambahkan di sini -->
+    </ul>
+
+    <div class="new-reminder" onclick="openModal()" role="button" tabindex="0" aria-label="Tambah pengingat baru">
+        <i class="icon">+</i>
+        Pengingat Baru
+    </div>
+
+    <div id="taskModal" class="modal" aria-hidden="true">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()" aria-label="Tutup modal">&times;</span>
+            <h2>Tambah Tugas Baru</h2>
+            <input type="text" id="taskTitle" placeholder="Judul Tugas" aria-label="Judul Tugas" required>
+            <input type="time" id="taskTime" aria-label="Pilih waktu" required>
+            <select id="timeOfDay" aria-label="Waktu" required>
+                <option value="Pagi">Pagi</option>
+                <option value="Siang">Siang</option>
+                <option value="Sore">Sore</option>
+                <option value="Malam">Malam</option>
+            </select>
+            <select id="dayOfWeek" aria-label="Hari" required>
+                <option value="Senin">Senin</option>
+                <option value="Selasa">Selasa</option>
+                <option value="Rabu">Rabu</option>
+                <option value="Kamis">Kamis</option>
+                <option value="Jumat">Jumat</option>
+                <option value="Sabtu">Sabtu</option>
+                <option value="Minggu">Minggu</option>
+            </select>
+            <button onclick="addTask()" aria-label="Tambah tugas">Tambah Tugas</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', loadTasks);
+
+        function loadTasks() {
+            const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+            const taskList = document.getElementById('taskList');
+
+            taskList.innerHTML = '';
+
+            tasks.forEach((task, index) => {
+                const taskItem = document.createElement('li');
+                taskItem.className = 'task' + (task.completed ? ' completed' : '');
+                taskItem.innerHTML = `
+                    <div class="circle" onclick="toggleCompletion(${index})"></div>
+                    <div class="task-info">
+                        <div class="task-title">${task.title}</div>
+                        <div class="task-subtitle">${task.day} – ${task.period} – ${task.time}</div>
+                    </div>
+                    <div class="delete-btn" onclick="deleteTask(${index})" aria-label="Hapus tugas">&times;</div>
+                `;
+                taskList.appendChild(taskItem);
+            });
+        }
+
+        function openModal() {
+            document.getElementById('taskModal').style.display = 'flex';
+            document.getElementById('taskModal').setAttribute('aria-hidden', 'false');
+        }
+
+        function closeModal() {
+            document.getElementById('taskModal').style.display = 'none';
+            document.getElementById('taskModal').setAttribute('aria-hidden', 'true');
+        }
+
+        function addTask() {
+            const title = document.getElementById('taskTitle').value.trim();
+            const time = document.getElementById('taskTime').value;
+            const period = document.getElementById('timeOfDay').value;
+            const day = document.getElementById('dayOfWeek').value;
+
+            if (!title) {
+                alert("Judul tugas tidak boleh kosong!");
+                return;
+            }
+
+            const task = { title, time, period, day, completed: false };
+
+            const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+            tasks.push(task);
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+
+            loadTasks();
+
+            document.getElementById('taskTitle').value = '';
+            document.getElementById('taskTime').value = '';
+            document.getElementById('timeOfDay').value = 'Pagi';
+            document.getElementById('dayOfWeek').value = 'Senin';
+
+            closeModal();
+        }
+
+        function deleteTask(index) {
+            const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+            tasks.splice(index, 1);
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+            loadTasks();
+        }
+
+        function toggleCompletion(index) {
+            const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+            tasks[index].completed = !tasks[index].completed;
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+            loadTasks();
+        }
+    </script>
+</body>
+</html>
